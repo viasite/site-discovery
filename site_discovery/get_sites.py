@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from __future__ import print_function
 import optparse
 import datetime
@@ -9,7 +6,6 @@ import sys
 import signal
 import subprocess
 from pprint import pprint
-import pwd
 import socket
 import time
 import json
@@ -256,7 +252,7 @@ class CommandRunner:
         return (out, err)
 
 """
-Собирает таблицу из результатов тестов
+Build table from site-info results
 """
 class XLSTable():
     def __init__(self, args, sites):
@@ -280,7 +276,7 @@ class XLSTable():
             sys.exit(1)
 
         for t in tests_config['tests']:
-            # нормализуем конфиг
+            # config normalize
             if 'groups' in t:
                 if not isinstance(t['groups'], (list)):
                     t['groups'] = [t['groups']]
@@ -298,7 +294,7 @@ class XLSTable():
             return tests_config['tests']
 
         for t in tests_config['tests']:
-            # фильтруем по пересечениям групп
+            # filter by groups intersection
             intersect = list(set(groups) & set(t['groups']))
             if intersect:
                 filtered.append(t)
@@ -306,11 +302,11 @@ class XLSTable():
 
 
     """
-    Каждая ячейка должна иметь поля name, result
-    Может быть поле valid
+    Each cell must have fields name, result
+    May have field valid
     """
     def _excel_sheet_fill(self, sheet, rows, styles={}, row_offset=1):
-        # заполнение всех ячеек
+        # fill all cells
         for row_idx in range(0, len(rows)):
             row = rows[row_idx]
 
@@ -324,17 +320,17 @@ class XLSTable():
                 if 'comment' in col and col['comment']:
                     cell.comment = Comment(col['comment'], '')
 
-                # стили валидации
+                # validation styles
                 if 'valid' in col and col['valid'] in styles:
                     cell.style = styles[col['valid']]
 
-                # без этого некоторые цифры являются строками
+                # set numeric types for some test results
                 if isinstance(col['result'], (int, long, float, complex)):
                     #cell.value = str(col['result'])
                     cell.data_type = cell.TYPE_NUMERIC
                     #cell.number_format = '0.00E+00'
 
-                # без этого некоторые цифры являются строками
+                # set numeric types for some test results
                 elif isinstance(col['result'], basestring) and col['result'].isdigit():
                     #cell.value = float(col['result']) if '.' in col['result'] else int(col['result'])
                     cell.data_type = cell.TYPE_NUMERIC
@@ -342,16 +338,16 @@ class XLSTable():
         #return sheet
 
     """
-    Афтофильтры, фикс. колонки и прочие красоты
+    Autofilters, fixed columns and other beautifiers
     """
 
     def _excel_sheet_tune(self, sheet, style=None):
-        # автофильтр
+        # autofilter
         sheet_dimensions_name = 'A1:%s%s' % (get_column_letter(
             sheet.max_column), sheet.max_row)
         sheet.auto_filter.ref = sheet_dimensions_name
 
-        # автосуммы
+        # autosum
         sum_row_idx = sheet.max_row + 2
         sheet['A%s' % sum_row_idx].value = 'totals'
         for col_idx in range(2, sheet.max_column):
@@ -362,17 +358,17 @@ class XLSTable():
                 cell_letter, 2, cell_letter, sheet.max_row)
             cell.value = '=SUM(%s)' % column_range_name
 
-        # ширина
+        # width
         sheet.column_dimensions['A'].width = 25
         sheet.column_dimensions['B'].width = 5
         for col_idx in range(2, sheet.max_column):
             cell_letter = get_column_letter(col_idx)
             sheet.column_dimensions[cell_letter].width = 15
 
-        # фиксированные шапка и первая колонка
+        # fixed first row and first column
         sheet.freeze_panes = sheet['B2']
 
-        # стиль для всех колонок
+        # default cell style
         # if style:
         #     for col_idx in range(sheet.max_column):
         #         col_name = get_column_letter(col_idx + 1)
@@ -406,12 +402,12 @@ class XLSTable():
         for name,style in styles.iteritems():
             book.add_named_style(style)
 
-        # Лист "drupals"
+        # Sheet "drupals"
         sheet = book.active
         sheet.title = 'site-info'
         rows = []
 
-        # заполнение шапки
+        # header fill
         field_names = []
         for col_idx, t in enumerate(tests_config):
             col_name = get_column_letter(col_idx + 1)
@@ -426,7 +422,7 @@ class XLSTable():
             #         #print 'comment for %s: %s' % (col['name'], test_config['comment'])
             #         cell.comment = Comment(test_config['comment'], '')
 
-        # в разных сайтах разное кол-во результатов, заполняем пустые значения
+        # fill absent tests with empty values
         for site in sites:
             row = []
             site_info = site['site_info']
@@ -445,7 +441,7 @@ class XLSTable():
         self._excel_sheet_fill(sheet, rows, styles)
         self._excel_sheet_tune(sheet, style=styles['default'])
 
-        # листы групп тестов
+        # test groups sheets
         # test_groups = self.get_test_groups()
         # for test_group in test_groups:
         #     sheet = book.create_sheet(title=test_group)
@@ -461,8 +457,8 @@ class XLSTable():
 
     """ not used """
     # def _list_times(self):
-    #     # Лист "times"
-    #     # Нужен для определения медленных тестов
+    #     # Sheet "times"
+    #     # Need for slow tests detection
     #     sheet = book.create_sheet(title='times')
     #     rows = []
     #     for test_suite in test_suites:

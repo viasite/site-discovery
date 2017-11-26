@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import argparse
 import datetime
 import os
@@ -100,7 +97,7 @@ class SiteInfo():
             sys.exit(1)
 
         for t in tests_config['tests']:
-            # нормализуем конфиг
+            # normalize config
             if 'groups' in t:
                 if not isinstance(t['groups'], (list)):
                     t['groups'] = [t['groups']]
@@ -118,7 +115,7 @@ class SiteInfo():
             return tests_config['tests']
 
         for t in tests_config['tests']:
-            # фильтруем по пересечениям групп
+            # filter by groups intersection
             intersect = list(set(groups) & set(t['groups']))
             if intersect:
                 filtered.append(t)
@@ -188,9 +185,9 @@ class SiteInfo():
         self.data[name] = value
 
     """
-    Получение всех данных теста: названия тестов, результаты, валидация.
-    Формирование колонок, которые не тесты, а сводные
-    Используется для формирования всего остального
+    Get all test data: name, results, validation.
+    Generate summary columns.
+    Using for generate all other.
     """
 
     def get_data(self, group=None):
@@ -233,7 +230,7 @@ class SiteInfo():
             'valid': None
         })
 
-        # общие результаты по всем тестам сайта
+        # Summary for all site tests
         row.append({
             'name': 'result',
             'result': result,
@@ -259,7 +256,7 @@ class SiteInfo():
 
 
 """
-SiteTest - один тест (одна колонка)
+SiteTest - single test (one column)
 """
 
 
@@ -283,7 +280,7 @@ class SiteTest():
             self.groups = []
 
     """
-    Запуск команды теста, получение результата, вывод в консоль
+    Execute test command, get result, output to console
     """
 
     def run(self):
@@ -297,7 +294,7 @@ class SiteTest():
             return self.result
 
     """
-    Цветной вывод результата теста в консоль
+    Color output of result to console
     """
 
     def out_console(self, color_output=True, delta=None):
@@ -317,7 +314,7 @@ class SiteTest():
 
         color = colors[self.valid_str()]
 
-        # TODO: color_output отключает вывод коммента, из-за крона
+        # TODO: color_output disables comment output, for cron
         comment = (' (%s)' %
                    self.comment if self.comment and color_output else '')
         delta_text = ''
@@ -337,8 +334,8 @@ class SiteTest():
         return 2 if self.validable() else 0
 
     """
-    Проверка результата.
-    Возвращает: None|True|False|Warn|результат
+    Result check.
+    Returns: None|True|False|Warn|result
     """
 
     def valid(self):
@@ -370,9 +367,9 @@ class SiteTest():
         }[self.valid()]
 
     """
-    Проверка результата по правилам
-    Если соответствует, вернет True
-    Если правила пустые, значит соответствует (TODO: с этим будут проблемы)
+    Result validation
+    Return True if matches rule
+    If rule is empty then rule matches (TODO: will problems with it)
     """
 
     def _check(self, result, rules):
