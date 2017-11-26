@@ -1,0 +1,6 @@
+/.eggs
+/bin
+/build
+/dist
+/site_discovery.egg-info
+*.pyc

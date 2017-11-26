@@ -1,0 +1,4 @@
+influxdb>=4.0.0
+openpyxl>=2.4.0
+PyYAML
+sh
