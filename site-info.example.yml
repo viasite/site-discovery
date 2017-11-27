@@ -1,49 +1,49 @@
 ---
 tests:
 - name: root_path
-  comment: Путь к сайту
+  comment: site root path
   command: pwd
   type: string
   groups: main
 
 - name: server
-  comment: hostname сервера
+  comment: server's hostname
   command: hostname -f
   type: string
   groups: main
 
 - name: user
-  comment: пользователь сайта
+  comment: site user
   command: stat -c '%U' "$PWD"
   type: string
   groups: main
 
 - name: domain
-  comment: главный домен сайта
+  comment: site main domain
   command: get_domain
   type: string
   groups: main
 
 - name: engine
-  comment: движок сайта
+  comment: site engine
   command: get-engine
   type: string
   groups: main
 
 - name: domain_on_server
-  comment: домен действительно делегирован на этот сервер
+  comment: is site domain's DNS points to current server
   command: domain-on-server ${DOMAIN}
   type: string
   groups: main
 
 - name: email
-  comment: главный домен сайта
+  comment: site email
   command: get-email
   type: string
   groups: info
 
 - name: maintenance_mode
-  comment: Режим обслуживания
+  comment: is site in maintenance mode
   command: drs vget maintenance_mode
   validate:
     warning: '0'
@@ -51,7 +51,7 @@ tests:
   groups: info
 
 - name: cron
-  comment: Наличие записи в системном кроне
+  comment: is site have cron entry in crontab
   command: echo $(( $(crontab -l -u $(get_pwd_user) | grep "drs cron-run \"\?$(pwd)"
     | wc -l) + $(crontab -l -u $(get_pwd_user) | grep "drs cron-run-elysia \"\?$(pwd)"
     | wc -l) ))
@@ -63,21 +63,21 @@ tests:
   groups: cron
 
 - name: cache
-  comment: Кеш анонимов, должен быть включен
+  comment: is anonymous cache enabled
   command: drs vget cache
   validate: '1'
   engine: drupal
   groups: cache
 
 - name: block_cache
-  comment: Кеш блоков
+  comment: block cache
   command: drs vget block_cache
   validate: '1'
   engine: drupal
   groups: cache
 
 - name: cache_lifetime
-  comment: Минимальное время жизни кэша
+  comment: cache lifetime min
   command: drs vget cache_lifetime
   validate:
     min: 300
@@ -87,7 +87,7 @@ tests:
   groups: cache
 
 - name: page_cache_maximum_age
-  comment: Время жизни кэша страниц (который сбрасывается по Ctrl+F5)
+  comment: browser cache lifetime
   command: drs vget page_cache_maximum_age
   validate:
     min: 300
@@ -97,28 +97,28 @@ tests:
   groups: cache
 
 # - name: cached_pages
-#   comment: Загружено страниц из кеша
+#   comment: cached pages loaded count
 #   command: drupal-cache-hit ${DOMAIN} /var/log/nginx/drupal_cache_hit.log.1 | grep
 #     HIT | cut -d' ' -f2
 #   engine: drupal
 #   groups: cache
 
 # - name: total_pages
-#   comment: Всего загружено страниц
+#   comment: total pages loaded count
 #   command: drupal-cache-hit ${DOMAIN} /var/log/nginx/drupal_cache_hit.log.1 | grep
 #     total | cut -d' ' -f2
 #   engine: drupal
 #   groups: cache
 
 - name: total_pages_load_time
-  comment: Потрачено секунд на загрузку всех страниц
+  comment: total pages loading time, seconds
   command: grep "^${DOMAIN}" /var/log/nginx/drupal_cache_hit.log.1 | awk -F\" '{print
     $7}' | grep -v '^$' | tr -d ' ' | awk '{ sum += $1 } END { print sum }' | cut
     -d'.' -f1
   groups: cache
 
 # - name: cache_hit_percent
-#   comment: Процент страниц, отданных из кеша
+#   comment: cached page percent
 #   command: drupal-cache-hit ${DOMAIN} /var/log/nginx/drupal_cache_hit.log.1 | grep
 #     percent | cut -d' ' -f2
 #   validate:
@@ -129,14 +129,14 @@ tests:
 #   groups: cache
 
 - name: preprocess_css
-  comment: Сжатие CSS
+  comment: css compress
   command: drs vget preprocess_css
   validate: '1'
   engine: drupal
   groups: cache
 
 - name: preprocess_js
-  comment: Сжатие JS
+  comment: js compress
   command: drs vget preprocess_js
   validate: '1'
   engine: drupal
@@ -154,19 +154,19 @@ tests:
   type: string
 
 - name: files_count
-  comment: Кол-во файлов сайта
+  comment: site's files count
   command: find -type f | wc -l
   disabled: true
   groups: files
 
 - name: dirs_count
-  comment: Кол-во папок сайта
+  comment: site's directories count
   command: find -type d | wc -l
   disabled: true
   groups: files
 
 - name: styles_files
-  comment: Кол-во сгенерированных превьюшек картинок
+  comment: image styles files count
   command: test -d sites/default/files/styles && find sites/default/files/styles |
     wc -l || echo 0
   disabled: true
@@ -174,7 +174,7 @@ tests:
   groups: files
 
 - name: count_modules
-  comment: Кол-во включенных модулей
+  comment: enabled modules count
   command: drs modules-enabled | wc -l
   validate:
     max: 150
@@ -184,7 +184,7 @@ tests:
   groups: modules
 
 - name: undoc_modules
-  comment: Кол-во незадокументированных модулей
+  comment: undoc modules count
   command: drs modules-undoc | wc -l
   validate:
     max: 50
@@ -260,8 +260,7 @@ tests:
   - cache
 
 - name: sitemap_count
-  comment: Кол-во ссылок в sitemap.xml, не умеет считать, когда в sitemap.xml лежат
-    другие sitemap.xml
+  comment: sitemap.xml links count, not recursive
   command: "[ $(drs module-enabled xmlsitemap) = 1 ] && drs urls sitemap | wc -l ||
     echo 0"
   validate:
@@ -271,7 +270,7 @@ tests:
   groups: seo
 
 - name: h1_count
-  comment: Кол-во h1 на главной странице
+  comment: h1 on mainpage count
   command: wget -q -O- 'http://${DOMAIN}' | grep -c '<h1'
   validate:
     max: 1
@@ -280,27 +279,27 @@ tests:
   groups: seo
 
 - name: robots_disallow
-  comment: Индексация заблокирована в robots.txt
+  comment: is site disallowed for index in robots.txt
   command: grep -oEc '^Disallow:\s*?/$' robots.txt
   validate:
     max: 0
   groups: seo
 
 - name: viasite_link
-  comment: Кол-во ссылок на viasite.ru
+  comment: count links on viasite.ru
   command: wget -q -O- 'http://${DOMAIN}' | grep -c 'http://viasite.ru'
   validate:
     min: 1
   groups: seo
 
 - name: git
-  comment: Наличие git
+  comment: git exists
   command: test -d .git && echo 1 || echo 0
   validate: '1'
   groups: git
 
 - name: git_clean
-  comment: Чистый git
+  comment: git clean
   disabled: true
   command: git diff --quiet --ignore-submodules HEAD && echo 1 || echo 0
   validate:
@@ -310,7 +309,7 @@ tests:
   - files
 
 # - name: db_size
-#   comment: Размер БД, в Мб
+#   comment: database size, mb
 #   command: db-size "$(drs database-settings database)"
 #   validate:
 #     max: 500
@@ -320,7 +319,7 @@ tests:
 #   groups: db
 
 - name: cache_form
-  comment: Кол-во записей в кеше форм
+  comment: cache_form rows
   command: drs table-count cache_form
   validate:
     warning:
@@ -331,7 +330,7 @@ tests:
   - cache
 
 - name: cache_menu
-  comment: Кол-во записей в кеше меню
+  comment: cache_menu rows
   command: drs table-count cache_menu
   engine: drupal
   groups:
@@ -339,7 +338,7 @@ tests:
   - cache
 
 - name: cache_menu_page
-  comment: В таблице cache_menu зачем-то кешируются пункты с привязкой к URL
+  comment: cache_menu_page rows
   command: drs sql "SELECT COUNT(*) FROM {cache_menu} WHERE cid LIKE '%:page:%'"
   engine: drupal
   groups:
@@ -347,37 +346,37 @@ tests:
   - cache
 
 - name: watchdog_count
-  comment: Кол-во записей в журнале dblog
+  comment: dblog count
   command: drs table-count watchdog
   engine: drupal
   groups: db
 
 - name: node_count
-  comment: Кол-во нод
+  comment: nodes count
   command: drs table-count node
   engine: drupal
   groups: db
 
 - name: commerce_product_count
-  comment: Кол-во продуктов
+  comment: commerce products count
   command: drs table-count commerce_product
   engine: drupal
   groups: db
 
 - name: taxonomy_vocabulary_count
-  comment: Кол-во словарей
+  comment: vocabularies count
   command: drs table-count taxonomy_vocabulary
   engine: drupal
   groups: db
 
 - name: taxonomy_term_data_count
-  comment: Кол-во терминов
+  comment: terms count
   command: drs table-count taxonomy_term_data
   engine: drupal
   groups: db
 
 - name: url_alias_count
-  comment: Кол-во ЧПУ
+  comment: url aliases count
   command: drs table-count url_alias
   engine: drupal
   groups:
@@ -385,7 +384,7 @@ tests:
   - seo
 
 - name: users_count
-  comment: Кол-во юзеров
+  comment: users count
   command: drs table-count users
   engine: drupal
   groups:
@@ -393,8 +392,7 @@ tests:
   - users
 
 - name: user_register
-  comment: Регистрация на сайте (0 - отключена, 1 - с одобрением админа, 2 - обычная
-    регистрация)
+  comment: user register status (0 - disabled, 1 - admin approve, 2 - enabled)
   command: drs vget user_register
   validate:
     max: 1
@@ -404,7 +402,7 @@ tests:
   groups: users
 
 - name: drupal_bootstrap_full
-  comment: Время загрузки Drupal bootstrap (msec)
+  comment: drupal bootstrap time (msec)
   command: drs bootstrap-timings | grep 'DRUPAL_BOOTSTRAP_FULL' | cut -d':' -f 2 |
     tr -d ' '
   engine: drupal
