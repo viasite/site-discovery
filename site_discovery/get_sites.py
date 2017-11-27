@@ -342,26 +342,29 @@ class XLSTable():
     """
 
     def _excel_sheet_tune(self, sheet, style=None):
+        last_result_row_idx = sheet.max_row
+        last_result_col_idx = sheet.max_column
+
         # autofilter
         sheet_dimensions_name = 'A1:%s%s' % (get_column_letter(
-            sheet.max_column), sheet.max_row)
+            last_result_col_idx), last_result_row_idx)
         sheet.auto_filter.ref = sheet_dimensions_name
 
         # autosum
         sum_row_idx = sheet.max_row + 2
         sheet['A%s' % sum_row_idx].value = 'totals'
-        for col_idx in range(2, sheet.max_column):
+        for col_idx in range(2, last_result_col_idx):
             cell_letter = get_column_letter(col_idx)
             cell_name = '%s%s' % (cell_letter, sum_row_idx)
             cell = sheet.cell(cell_name)
             column_range_name = '%s%s:%s%s' % (
-                cell_letter, 2, cell_letter, sheet.max_row)
+                cell_letter, 2, cell_letter, last_result_row_idx)
             cell.value = '=SUM(%s)' % column_range_name
 
         # width
         sheet.column_dimensions['A'].width = 25
         sheet.column_dimensions['B'].width = 5
-        for col_idx in range(2, sheet.max_column):
+        for col_idx in range(2, last_result_col_idx):
             cell_letter = get_column_letter(col_idx)
             sheet.column_dimensions[cell_letter].width = 15
 
@@ -370,7 +373,7 @@ class XLSTable():
 
         # default cell style
         # if style:
-        #     for col_idx in range(sheet.max_column):
+        #     for col_idx in range(last_result_col_idx):
         #         col_name = get_column_letter(col_idx + 1)
         #         col_dimensions = sheet.column_dimensions[col_name]
         #         col_dimensions.style = style
