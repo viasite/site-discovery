@@ -1,0 +1,7 @@
+---
+tests:
+- name: nginx_pages_total
+  comment: Count of yesterday generated pages
+  command: cat /var/log/nginx/access.log.1 | grep -v 444 | wc -l
+  type: integer
+  groups: main

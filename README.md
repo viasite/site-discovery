@@ -62,3 +62,6 @@ get-sites --format xlsx --xlsx-path /tmp/sites-info.xlsx --group all --delay 10
 
 # site-info
 Get info for single site.
+
+# server-info
+Get info for server.
