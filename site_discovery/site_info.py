@@ -1,5 +1,4 @@
 import argparse
-import datetime
 import os
 import sys
 import signal
@@ -175,7 +174,6 @@ class SiteInfo():
             data = {'points': [{
                 'measurement': 'site_info',
                 'tags': tags,
-                'time': datetime.datetime.now(),
                 'fields': fields
             }]}
 

@@ -1,5 +1,4 @@
 import argparse
-import datetime
 import json
 import signal
 import subprocess
@@ -7,7 +6,6 @@ import os
 import time
 import sys
 import yaml
-from pprint import pprint
 from influxdb import line_protocol
 
 
@@ -150,7 +148,6 @@ class ServerInfo():
             data = {'points': [{
                 'measurement': measurement,
                 'tags': tags,
-                'time': datetime.datetime.now(),
                 'fields': fields
             }]}
 
