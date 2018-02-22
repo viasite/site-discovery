@@ -314,8 +314,8 @@ class XLSTable():
             for col_idx in range(0, len(row)):
                 col = row[col_idx]
                 col_letter = get_column_letter(col_idx + 1)
-                cell_name = '%s%s' % (col_letter, row_idx + 1 + row_offset)
-                cell = sheet.cell(cell_name)
+                cell_row_idx = row_idx + 1 + row_offset
+                cell = sheet.cell(cell_row_idx, col_idx + 1)
                 cell.value = '%s' % (col['result'])
 
                 if 'comment' in col and col['comment']:
@@ -356,8 +356,7 @@ class XLSTable():
         sheet['A%s' % sum_row_idx].value = 'totals'
         for col_idx in range(2, last_result_col_idx):
             cell_letter = get_column_letter(col_idx)
-            cell_name = '%s%s' % (cell_letter, sum_row_idx)
-            cell = sheet.cell(cell_name)
+            cell = sheet.cell(sum_row_idx, col_idx)
             column_range_name = '%s%s:%s%s' % (
                 cell_letter, 2, cell_letter, last_result_row_idx)
             cell.value = '=SUM(%s)' % column_range_name
@@ -416,7 +415,7 @@ class XLSTable():
         for col_idx, t in enumerate(tests_config):
             col_name = get_column_letter(col_idx + 1)
             field_names.append(t['name'])
-            cell = sheet.cell('%s%s' % (col_name, 1))
+            cell = sheet.cell(1, col_idx + 1)
             cell.value = t['name']
             if 'comment' in t:
                 cell.comment = Comment(t['comment'], '')
