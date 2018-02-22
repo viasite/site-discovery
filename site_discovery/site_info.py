@@ -1,3 +1,4 @@
+from __future__ import print_function
 import argparse
 import os
 import sys
@@ -14,6 +15,10 @@ from influxdb import line_protocol
 
 def signal_handler(signal, frame):
     sys.exit(0)
+
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 
 def main():
@@ -36,8 +41,12 @@ def main():
     # 	only_tests=only_tests, only_groups=only_groups, term_output=term_output)
 
     site_info = SiteInfo(args)
-    site_info.prepare()
-    site_info.run()
+    if not os.path.isdir(site_info.root_path):
+        eprint("%s is not directory" % site_info.root_path)
+    else:
+        site_info.prepare()
+        site_info.run()
+
     site_info.output()
 
 
@@ -152,8 +161,8 @@ class SiteInfo():
             for t in data:
                 if t['name'] in['time', 'result', 'result_percent']:
                     #delta = self.get_delta(t['last_result'], t['result'])
-                    print '%s: %s' % (t['name'], t['result'])
-            print ''
+                    print('%s: %s' % (t['name'], t['result']))
+            print('')
 
         elif self.output_format == 'json':
             json_raw = json.dumps(data)
@@ -177,7 +186,7 @@ class SiteInfo():
                 'fields': fields
             }]}
 
-            print line_protocol.make_lines(data)
+            print(line_protocol.make_lines(data))
 
     def add_data(self, name, value):
         self.data[name] = value
@@ -321,7 +330,7 @@ class SiteTest():
             delta_text = ' (%s%s%s%s)' % (
                 delta_color, ('+' if delta > 0 else ''), delta, nc)
 
-        print '%s: %s%s%s%s%s' % (self.name, color, self.result, nc, delta_text, comment)
+        print('%s: %s%s%s%s%s' % (self.name, color, self.result, nc, delta_text, comment))
 
     def validable(self):
         if self.validate is None or not self.validate:

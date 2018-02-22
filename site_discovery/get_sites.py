@@ -130,6 +130,7 @@ class Sites:
                 '/' + self.get_hash(site) + '.json'
             if os.path.exists(json_path):
                 with open(json_path) as f:
+                    eprint('open %s' % json_path)
                     self.sites[k]['site_info'] = json.load(f)
 
     def site_info_generate(self):
