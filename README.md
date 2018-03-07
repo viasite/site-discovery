@@ -7,15 +7,6 @@
 pip install site_discovery
 ```
 
-## Developer install
-```
-source virtualenvwrapper.sh
-mkvirtualenv site-discovery
-workon site-discovery
-cd site-discovery
-pip install -e .
-```
-
 # get-sites
 Get sites from localhost and execute site-info for each site.
 
