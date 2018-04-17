@@ -63,6 +63,9 @@ def main():
     parser.add_option('--cached',
                       action='store_true', dest='site_info_cached',
                       help='Only attach site-info, don\'t generate')
+    parser.add_option('--cache-time',
+                      type=int, action='store', dest='cache_time', default=300,
+                      help='Max cache age when call site-info, in seconds')
     parser.add_option('--delay',
                       type=int, action='store', dest='delay', default=0,
                       help='Delay between site-info calls, seconds')
@@ -111,7 +114,7 @@ def main():
         #sites.site_info_generate()
 
         if not args.site_info_cached:
-            sites.site_info_generate()
+            sites.site_info_generate(args.cache_time)
         sites.site_info_attach()
 
     sites.output()
@@ -134,23 +137,33 @@ class Sites:
                     eprint('open %s' % json_path)
                     self.sites[k]['site_info'] = json.load(f)
 
-    def site_info_generate(self):
+    def is_cached(self, file_path, cache_time = 300):
+        if not os.path.exists(file_path):
+            return False
+        cached_age = time.time() - os.path.getmtime(file_path)
+        return cached_age < cache_time
+
+    def site_info_generate(self, cache_time = 300):
         commands = []
         if not os.path.exists(self.args.results_dir):
             os.mkdir(self.args.results_dir)
             os.chmod(self.args.results_dir, 0700)
 
         for site in self.sites:
+            json_path = '%s/%s.json' % (self.args.results_dir, self.get_hash(site))
             site_info_args = [site['root_path'], '--format', 'json']
             for group in self.args.groups:
                 site_info_args.extend(['--group', group])
+
+            if self.is_cached(json_path, cache_time):
+                continue
 
             commands.append({
                 'command': 'site-info',
                 'args': site_info_args,
                 'stdout': '',
                 'stderr': '',
-                'out_path': '%s/%s.json' % (self.args.results_dir, self.get_hash(site))
+                'out_path': json_path
             });
 
         runner = CommandRunner(commands, delay=self.args.delay, lock_file_path=self.args.lock_file_path,

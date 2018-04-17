@@ -36,10 +36,11 @@ get-sites --format xlsx --xlsx-path /tmp/sites-info.xlsx --group all --delay 10
 ```
 
 ## Options
-- `--format=[console|json|xlsx]` - output format
+- `--format=[console|json|xlsx|line]` - output format
 - `--root-path-excluded=ROOT_PATHS_EXCLUDED` - exclude some paths, default: [/usr/share/nginx/html, /var/www/html, /var/www/example.com]
 - `--excluded-file=EXCLUDED_FILE` - don't scan site with file in site root, default: `.excluded`
 - `--cached` - Only attach site-info, don't generate
+- `--cache-time=TIME` - Cache time, when `--cached` not set
 - `--delay=DELAY` - Delay between site-info calls, seconds, default: 0
 - `--lock-file-path=LOCK_FILE_PATH` - Path to lockfile, default: `/tmp/sites-info.lock`
 - `--lock-file-max-age=LOCK_FILE_AGE` - Max age of lockfile (since last modification), seconds, default: 86400
