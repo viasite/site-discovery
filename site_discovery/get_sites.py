@@ -20,7 +20,6 @@ from openpyxl.utils import get_column_letter
 from openpyxl.styles import NamedStyle, PatternFill, Font
 from openpyxl.comments import Comment
 
-
 def signal_handler(signal, frame):
     sys.exit(0)
 
@@ -50,6 +49,13 @@ def main():
     parser.add_option('--format',
                       action='store', dest='output_format', default='console',
                       help='Output format (console, json, xlsx, line')
+    parser.add_option('-q', '--quiet',
+                      action='store_true', dest='quiet',
+                      help='Don\'t output progress')
+    parser.add_option('--color',
+                      action='store_true', dest='color',
+                      help='Colorize output (do not use with grep)')
+
     parser.add_option('--root-path-excluded',
                       action='append', dest='root_paths_excluded',
                       default=['/usr/share/nginx/html',
@@ -82,7 +88,7 @@ def main():
                       action='store_true', dest='force', default=False,
                       help='Ignore lockfile')
 
-    parser.add_option('--group',
+    parser.add_option('--group', '--groups',
                       action='append', dest='groups', default=['main'],
                       help='Groups of site-info tests')
     parser.add_option('--limit',
@@ -107,7 +113,8 @@ def main():
         with open(args.sites_json) as f:
             sites.sites = json.load(f)
     else:
-        eprint('get-sites...')
+        if not args.quiet:
+            eprint('get-sites...')
         sites.load()
 
         #if args.site_info_generate:
@@ -134,13 +141,16 @@ class Sites:
                 '/' + self.get_hash(site) + '.json'
             if os.path.exists(json_path):
                 with open(json_path) as f:
-                    eprint('open %s' % json_path)
+                    if not self.args.quiet:
+                        eprint('open %s' % json_path)
                     self.sites[k]['site_info'] = json.load(f)
 
     def is_cached(self, file_path, cache_time = 300):
         if not os.path.exists(file_path):
             return False
         cached_age = time.time() - os.path.getmtime(file_path)
+        if not self.args.quiet:
+            eprint('%s age: %d' % (file_path, cached_age))
         return cached_age < cache_time
 
     def site_info_generate(self, cache_time = 300):
@@ -166,7 +176,7 @@ class Sites:
                 'out_path': json_path
             });
 
-        runner = CommandRunner(commands, delay=self.args.delay, lock_file_path=self.args.lock_file_path,
+        runner = CommandRunner(commands, args=self.args, delay=self.args.delay, lock_file_path=self.args.lock_file_path,
                                lock_file_age=self.args.lock_file_age, force=self.args.force)
         runner.run()
 
@@ -212,18 +222,19 @@ class Sites:
                     values.append(value)
                 print('\t'.join(values))
         elif self.args.output_format == 'line':
+            color = 'white' if self.args.color else None
             for site in self.sites:
                 s = self.site_info_dict(site['site_info'])
                 values = []
                 print('')
-                print(colored(s['domain'] + ':', 'white'))
+                print(colored(s['domain'] + ':', color))
 
                 for t in site['site_info']:
                     value = t['result'].encode('utf-8') if isinstance(t['result'], basestring) else str(t['result'])
                     print('%s: %s: %s' % (
                         s['domain'], # colored(site['root_path']),
                         t['name'],
-                        colored(t['result'], 'white')
+                        colored('%s' % t['result'], color)
                     ))
         elif self.args.output_format == 'json':
             print(json.dumps(self.sites))
@@ -233,8 +244,9 @@ class Sites:
 
 
 class CommandRunner:
-    def __init__(self, commands, delay=0, lock_file_path=None, lock_file_age=None, force=False):
+    def __init__(self, commands, args, delay=0, lock_file_path=None, lock_file_age=None, force=False):
         self.commands = commands
+        self.args = args
         self.delay = delay
         self.lock_file = None
         self.lock_file_path = lock_file_path
@@ -253,7 +265,8 @@ class CommandRunner:
 
         with open(self.lock_file_path, 'a') as f:
             f.write(log_str)
-        eprint(log_str)
+        if not self.args.quiet:
+            eprint(log_str)
 
     def run(self):
         # if not self.lock_check():
