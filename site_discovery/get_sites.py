@@ -13,6 +13,7 @@ import re
 import urllib
 import copy
 import yaml
+from termcolor import colored # require pip install termcolor
 
 from openpyxl.workbook import Workbook
 from openpyxl.utils import get_column_letter
@@ -48,7 +49,7 @@ def main():
 
     parser.add_option('--format',
                       action='store', dest='output_format', default='console',
-                      help='Output format (console, json, xlsx')
+                      help='Output format (console, json, xlsx, line')
     parser.add_option('--root-path-excluded',
                       action='append', dest='root_paths_excluded',
                       default=['/usr/share/nginx/html',
@@ -182,14 +183,35 @@ class Sites:
             sites = sites[:self.args.limit]
         self.sites = sites
 
+    def site_info_dict(self, infos):
+        d = {}
+        for info in infos:
+            d[info['name']] = info['result']
+        return d
+
     def output(self):
         if self.args.output_format == 'console':
             for site in self.sites:
+                print('')
                 values = []
                 for t in site['site_info']:
                     value = t['result'].encode('utf-8') if isinstance(t['result'], basestring) else str(t['result'])
                     values.append(value)
                 print('\t'.join(values))
+        elif self.args.output_format == 'line':
+            for site in self.sites:
+                s = self.site_info_dict(site['site_info'])
+                values = []
+                print('')
+                print(colored(s['domain'] + ':', 'white'))
+
+                for t in site['site_info']:
+                    value = t['result'].encode('utf-8') if isinstance(t['result'], basestring) else str(t['result'])
+                    print('%s: %s: %s' % (
+                        s['domain'], # colored(site['root_path']),
+                        t['name'],
+                        colored(t['result'], 'white')
+                    ))
         elif self.args.output_format == 'json':
             print(json.dumps(self.sites))
         elif self.args.output_format == 'xlsx':
