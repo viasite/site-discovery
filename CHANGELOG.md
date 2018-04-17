@@ -1,5 +1,21 @@
 <a name=""></a>
-#  (2018-03-07)
+#  (2018-04-17)
+
+
+
+<a name="0.1.0"></a>
+# [0.1.0](https://github.com/viasite/site-discovery/compare/0.0.9...0.1.0) (2018-04-17)
+
+
+### Features
+
+* cache-time option ([cad3ae6](https://github.com/viasite/site-discovery/commit/cad3ae6))
+* line output format, friendly for console and grep ([66e19a5](https://github.com/viasite/site-discovery/commit/66e19a5))
+
+
+
+<a name="0.0.9"></a>
+## [0.0.9](https://github.com/viasite/site-discovery/compare/0.0.8...0.0.9) (2018-03-07)
 
 
 
