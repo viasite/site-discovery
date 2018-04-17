@@ -13,7 +13,7 @@ import re
 import urllib
 import copy
 import yaml
-from termcolor import colored # require pip install termcolor
+from termcolor import colored
 
 from openpyxl.workbook import Workbook
 from openpyxl.utils import get_column_letter
@@ -222,19 +222,20 @@ class Sites:
                     values.append(value)
                 print('\t'.join(values))
         elif self.args.output_format == 'line':
-            color = 'white' if self.args.color else None
             for site in self.sites:
                 s = self.site_info_dict(site['site_info'])
+                s['domain'] = s['domain'].encode('idna')
                 values = []
                 print('')
-                print(colored(s['domain'] + ':', color))
+                out = colored(s['domain'] + ':', 'white') if self.args.color else s['domain'] + ':'
+                print(out)
 
                 for t in site['site_info']:
-                    value = t['result'].encode('utf-8') if isinstance(t['result'], basestring) else str(t['result'])
+                    value = t['result'].encode('idna') if isinstance(t['result'], basestring) else str(t['result'])
                     print('%s: %s: %s' % (
                         s['domain'], # colored(site['root_path']),
                         t['name'],
-                        colored('%s' % t['result'], color)
+                        colored(value, 'white') if self.args.color else value
                     ))
         elif self.args.output_format == 'json':
             print(json.dumps(self.sites))
