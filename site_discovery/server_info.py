@@ -98,7 +98,7 @@ class ServerInfo():
         for test in tests:
             (out, err, time) = self.run_command(test['command'])
             result = test
-            result['result'] = int(out) if test['type'] == 'integer' else out
+            result['result'] = int(out) if test['type'] == 'integer' and out else out
             result['time'] = time
 
             results.append(result)
