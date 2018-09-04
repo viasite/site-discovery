@@ -1,5 +1,31 @@
 <a name=""></a>
-#  (2018-04-17)
+#  (2018-09-04)
+
+
+### Bug Fixes
+
+* server-info with empty logs caused exception ([5fc60cd](https://github.com/viasite/site-discovery/commit/5fc60cd))
+* **site-info:** output integers as int, not string ([59205e3](https://github.com/viasite/site-discovery/commit/59205e3))
+
+
+
+<a name="0.1.2"></a>
+## [0.1.2](https://github.com/viasite/site-discovery/compare/0.1.1...0.1.2) (2018-04-17)
+
+
+### Bug Fixes
+
+* working with unicode domains and grep ([64977b2](https://github.com/viasite/site-discovery/commit/64977b2))
+
+
+
+<a name="0.1.1"></a>
+## [0.1.1](https://github.com/viasite/site-discovery/compare/0.1.0...0.1.1) (2018-04-17)
+
+
+### Features
+
+* add --quiet, --color ([b06cd85](https://github.com/viasite/site-discovery/commit/b06cd85))
 
 
 
