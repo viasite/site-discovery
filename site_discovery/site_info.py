@@ -1,6 +1,7 @@
 from __future__ import print_function
 import argparse
 import os
+import re
 import sys
 import signal
 import subprocess
@@ -297,6 +298,12 @@ class SiteTest():
                 self.command, stdout=subprocess.PIPE, shell=True)
             (out, err) = proc.communicate()
             self.result = out.strip()
+
+            # integer values
+            intRegex = re.compile('^[0-9]+$')
+            if (not hasattr(self, 'type') or self.type == 'integer') and intRegex.match(self.result):
+                self.result = int(self.result)
+
             self.time = round(time.time() - started, 1)
             return self.result
 
