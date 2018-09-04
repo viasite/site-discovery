@@ -1,4 +1,6 @@
 ## Developer install
+bash scripts/init.sh or:
+
 ```
 source virtualenvwrapper.sh
 mkvirtualenv site-discovery
@@ -17,6 +19,8 @@ conventional-changelog -p angular -i CHANGELOG.md -s -r 0
 
 
 ## Upload to pypi
+
+bash scripts/upload.sh or:
 
 ```
 pip install twine
