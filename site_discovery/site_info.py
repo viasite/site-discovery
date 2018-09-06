@@ -282,7 +282,7 @@ class SiteTest():
         self.result = None
         self.time = 0
 
-        self.comment = self.validate['comment'] if 'comment' in self.validate else None
+        self.comment = self.validate['comment'] if type(self.validate) is dict and 'comment' in self.validate else None
 
         if not hasattr(self, 'groups'):
             self.groups = []
