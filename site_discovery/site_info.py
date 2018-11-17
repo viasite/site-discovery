@@ -142,7 +142,7 @@ class SiteInfo():
 
         for t in self.tests:
             # some tests has not command, for viasite-projects
-            if not command.t:
+            if not t.command:
                 continue
 
             t.command = t.command.replace('${DOMAIN}', self.data['domain'])
