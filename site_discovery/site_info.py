@@ -141,6 +141,10 @@ class SiteInfo():
             self.root_path).decode('idna'))
 
         for t in self.tests:
+            # some tests has not command, for viasite-projects
+            if not command.t:
+                continue
+
             t.command = t.command.replace('${DOMAIN}', self.data['domain'])
             os.chdir(self.root_path)
 
