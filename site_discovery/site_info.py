@@ -216,6 +216,9 @@ class SiteInfo():
             if group and group not in test.groups:
                 continue
 
+            if not test.command:
+                continue
+
             col = {
                 'name': test.name,
                 'result': test.result,
