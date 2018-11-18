@@ -34,8 +34,16 @@ def main():
     parser.add_argument('--group',
                         action='append', dest='groups', default=['main'],
                         help='Groups of site-info tests')
+    parser.add_argument('--only',
+                        action='store', dest='only', default='',
+                        help='Run only tests with names')
 
     args = parser.parse_args()
+
+    if args.only == '':
+        args.only = []
+    else:
+        args.only = args.only.split(',')
 
     # table = DrupalsTable(root_paths=root_paths, suites_limit=suites_limit, tests_limit=tests_limit,
     # 	data_xlsx_filename=options.data_xlsx_filename, data_json_filename=options.data_json_filename,
@@ -54,6 +62,7 @@ def main():
 class SiteInfo():
     def __init__(self, args):
         self.groups = args.groups
+        self.only = args.only
         self.root_path = args.root_path
         self.output_format = args.output_format
         self.tests = []
@@ -118,6 +127,7 @@ class SiteInfo():
     def get_tests(self):
         tests_config = self.get_all_tests()
         groups = self.groups
+        only = self.only
         filtered = []
 
         if 'all' in groups:
@@ -127,7 +137,9 @@ class SiteInfo():
             # filter by groups intersection
             intersect = list(set(groups) & set(t['groups']))
             if intersect:
-                filtered.append(t)
+                # filter by only
+                if len(only) == 0 or ('name' in t and t['name'] in only):
+                    filtered.append(t)
         return filtered
 
     def reset(self):
