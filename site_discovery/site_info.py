@@ -130,16 +130,23 @@ class SiteInfo():
         only = self.only
         filtered = []
 
+        # filter by only
+        if len(only) > 0:
+            for t in tests_config['tests']:
+                if 'name' in t and t['name'] in only:
+                    filtered.append(t)
+            return filtered
+
+        # no filter
         if 'all' in groups:
             return tests_config['tests']
 
+        # filter by group
         for t in tests_config['tests']:
             # filter by groups intersection
             intersect = list(set(groups) & set(t['groups']))
             if intersect:
-                # filter by only
-                if len(only) == 0 or ('name' in t and t['name'] in only):
-                    filtered.append(t)
+                filtered.append(t)
         return filtered
 
     def reset(self):
