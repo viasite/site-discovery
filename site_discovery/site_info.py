@@ -12,7 +12,7 @@ import json
 import urllib
 import yaml
 from influxdb import line_protocol
-
+import datetime
 
 def signal_handler(signal, frame):
     sys.exit(0)
@@ -221,7 +221,8 @@ class SiteInfo():
             data = {'points': [{
                 'measurement': 'site_info',
                 'tags': tags,
-                'fields': fields
+                'fields': fields,
+                'time': datetime.datetime.now()
             }]}
 
             return line_protocol.make_lines(data)
