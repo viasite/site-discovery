@@ -210,11 +210,13 @@ class SiteInfo():
             for t in data:
                 if t['result'] is None:
                     continue;
-                if t['type'] == 'integer' or t['type'] == 'boolean':
-                    if t['type'] == 'boolean':
-                        fields[t['name']] = 1 if t['result'] else 0
-                    else:
-                        fields[t['name']] = t['result']
+
+                if t['type'] == 'boolean':
+                    fields[t['name']] = 1 if t['result'] else 0
+
+                elif t['type'] == 'integer' or t['type'] == 'time':
+                    fields[t['name']] = t['result']
+
                 else:
                     tags[t['name']] = t['result']
 
@@ -274,6 +276,8 @@ class SiteInfo():
                 if test.type == 'boolean':
                     test.result = bool(test.result)
                 if test.type == 'integer':
+                    test.result = int(test.result)
+                if test.type == 'time':
                     test.result = int(test.result)
 
             col = {
@@ -373,7 +377,7 @@ class SiteTest():
             if (not hasattr(self, 'type') or self.type == 'integer') and intRegex.match(self.result):
                 self.result = int(self.result)
 
-            self.time = round(time.time() - started, 1)
+            self.time = int((time.time() - started) * 1000) # msec
             return self.result
 
     """
