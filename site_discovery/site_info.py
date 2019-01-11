@@ -224,7 +224,7 @@ class SiteInfo():
                 'measurement': 'site_info',
                 'tags': tags,
                 'fields': fields,
-                'time': datetime.datetime.now()
+                'time': datetime.datetime.utcnow()
             }]}
 
             return line_protocol.make_lines(data)
