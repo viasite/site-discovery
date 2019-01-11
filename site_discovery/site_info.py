@@ -30,7 +30,13 @@ def main():
         'root_path', help='Path to site root directory', nargs='?', default=os.getcwd())
     parser.add_argument('--format',
                         action='store', dest='output_format', default='console',
-                        help='Output format (console, json, line')
+                        help='Output format (console, json, line)')
+    parser.add_argument('--log-path',
+                        action='store', dest='log_path', default='',
+                        help='Write to log')
+    parser.add_argument('--log-format',
+                        action='store', dest='log_format', default='json',
+                        help='Log format (console, json, line)')
     parser.add_argument('--group',
                         action='append', dest='groups', default=['main'],
                         help='Groups of site-info tests')
@@ -65,6 +71,8 @@ class SiteInfo():
         self.only = args.only
         self.root_path = args.root_path
         self.output_format = args.output_format
+        self.log_path = args.log_path
+        self.log_format = args.log_format
         self.tests = []
         self.data = {}
         self.reset()
@@ -178,31 +186,37 @@ class SiteInfo():
 
         data = self.get_data()
 
-    def output(self):
-        data = self.get_data()
+    def get_output(self, data, format):
 
-        if self.output_format == 'console':
+        if format == 'console':
+            output = ''
             for t in data:
                 if t['name'] in['time', 'result', 'result_percent']:
                     #delta = self.get_delta(t['last_result'], t['result'])
-                    print('%s: %s' % (t['name'], t['result']))
-            print('')
+                    output += '%s: %s\n' % (t['name'], t['result'])
+            output += '\n'
+            return output
 
-        elif self.output_format == 'json':
+        elif format == 'json':
             json_raw = json.dumps(data)
-            print(json_raw)
+            return json_raw
 
-        if self.output_format == 'line':
+        if format == 'line':
             measurement = 'site_info'
             fields = {}
             tags = {}
-            for t in data:
-                tags[t['name']] = t['result']
 
-            #tags_raw = ['%s=%s' % (k,v) for k,v in tags.iteritems()]
-            fields = {'zxc': 3, 'qwe': 4}
-            #line = '%s,%s %s %s' % (measurement, tags_raw.join(','), fields_raw, timestamp)
-            # print line
+            # pprint(data)
+            for t in data:
+                if t['result'] is None:
+                    continue;
+                if t['type'] == 'integer' or t['type'] == 'boolean':
+                    if t['type'] == 'boolean':
+                        fields[t['name']] = 1 if t['result'] else 0
+                    else:
+                        fields[t['name']] = t['result']
+                else:
+                    tags[t['name']] = t['result']
 
             data = {'points': [{
                 'measurement': 'site_info',
@@ -210,7 +224,17 @@ class SiteInfo():
                 'fields': fields
             }]}
 
-            print(line_protocol.make_lines(data))
+            return line_protocol.make_lines(data)
+
+    def output(self):
+        data = self.get_data()
+
+        # write to log
+        if self.log_path:
+            with open(self.log_path, "a") as log:
+                log.write(self.get_output(data, self.log_format))
+
+        print(self.get_output(data, self.output_format))
 
     def add_data(self, name, value):
         self.data[name] = value
@@ -238,8 +262,22 @@ class SiteInfo():
             if not test.command:
                 continue
 
+            # default type integer
+            if not hasattr(test, 'type'):
+                test.type = 'integer'
+
+            # types fix
+            if test.result == '':
+                test.result = None;
+            else:
+                if test.type == 'boolean':
+                    test.result = bool(test.result)
+                if test.type == 'integer':
+                    test.result = int(test.result)
+
             col = {
                 'name': test.name,
+                'type': test.type,
                 'result': test.result,
                 #'last_result': self.get_last_result(test.name),
                 'valid': test.valid_str(),
@@ -259,6 +297,7 @@ class SiteInfo():
 
         row.append({
             'name': 'time',
+            'type': 'time',
             'result': time,
             #'last_result':self.get_last_result('time'),
             'valid': None
@@ -267,6 +306,7 @@ class SiteInfo():
         # Summary for all site tests
         row.append({
             'name': 'result',
+            'type': 'integer',
             'result': result,
             #'last_result':self.get_last_result('result'),
             'valid': None
@@ -274,12 +314,14 @@ class SiteInfo():
 
         row.append({
             'name': 'max_result',
+            'type': 'integer',
             'result': max_result,
             'valid': None
         })
 
         row.append({
             'name': 'result_percent',
+            'type': 'integer',
             'result': int(float(result) / max_result * 100) if max_result > 0 else 0,
             #'last_result':self.get_last_result('result_percent'),
             'valid': None
@@ -425,8 +467,6 @@ class SiteTest():
 
         else:
             return result == rules
-
-        return True
 
 
 if __name__ == '__main__':
