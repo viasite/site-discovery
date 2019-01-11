@@ -212,7 +212,10 @@ class SiteInfo():
                     continue;
 
                 if t['type'] == 'boolean':
-                    fields[t['name']] = 1 if t['result'] else 0
+                    # both fields and tags
+                    val = 1 if t['result'] else 0
+                    tags[t['name']] = val
+                    fields[t['name']] = val
 
                 elif t['type'] == 'integer' or t['type'] == 'time':
                     fields[t['name']] = t['result']
