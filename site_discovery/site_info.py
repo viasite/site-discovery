@@ -277,7 +277,12 @@ class SiteInfo():
                 test.result = None;
             else:
                 if test.type == 'boolean':
-                    test.result = bool(test.result)
+                    if test.result == '0':
+                        test.result = False
+                    elif test.result == '1':
+                        test.result = True
+                    else:
+                        test.result = None
                 if test.type == 'integer':
                     test.result = int(test.result)
                 if test.type == 'time':
