@@ -471,8 +471,13 @@ class SiteTest():
         if isinstance(rules, dict):
             if isinstance(result, basestring) and result.isdigit():
                 result = float(result)
+            # if isinstance(result, bool):
+            #     result = 1 if result else 0
+            # pprint(result)
+            # pprint(rules)
 
             if 'max' in rules and result > rules['max']:
+                # print('%d > %d' % (result, rules['max']))
                 return False
 
             if 'min' in rules and result < rules['min']:
@@ -480,6 +485,8 @@ class SiteTest():
 
         else:
             return result == rules
+
+        return True
 
 
 if __name__ == '__main__':
