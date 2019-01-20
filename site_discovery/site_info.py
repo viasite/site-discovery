@@ -217,7 +217,7 @@ class SiteInfo():
                     tags[t['name']] = val
                     fields[t['name']] = val
 
-                elif t['type'] == 'integer' or t['type'] == 'time':
+                elif t['type'] == 'integer' or t['type'] == 'float' or t['type'] == 'time':
                     fields[t['name']] = t['result']
 
                 else:
@@ -284,9 +284,11 @@ class SiteInfo():
                     else:
                         test.result = None
                 if test.type == 'integer':
-                    test.result = int(test.result)
+                    test.result = int(float(test.result))
+                if test.type == 'float':
+                    test.result = float(test.result)
                 if test.type == 'time':
-                    test.result = int(test.result)
+                    test.result = int(float(test.result))
 
             col = {
                 'name': test.name,
@@ -471,10 +473,6 @@ class SiteTest():
         if isinstance(rules, dict):
             if isinstance(result, basestring) and result.isdigit():
                 result = float(result)
-            # if isinstance(result, bool):
-            #     result = 1 if result else 0
-            # pprint(result)
-            # pprint(rules)
 
             if 'max' in rules and result > rules['max']:
                 # print('%d > %d' % (result, rules['max']))
