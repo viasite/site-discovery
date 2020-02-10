@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import optparse
 import datetime
 import os
@@ -10,7 +10,7 @@ import socket
 import time
 import json
 import re
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import copy
 import yaml
 from termcolor import colored
@@ -157,7 +157,7 @@ class Sites:
         commands = []
         if not os.path.exists(self.args.results_dir):
             os.mkdir(self.args.results_dir)
-            os.chmod(self.args.results_dir, 0700)
+            os.chmod(self.args.results_dir, 0o700)
 
         for site in self.sites:
             json_path = '%s/%s.json' % (self.args.results_dir, self.get_hash(site))
@@ -218,8 +218,10 @@ class Sites:
                 print('')
                 values = []
                 for t in site['site_info']:
-                    value = t['result'].encode('utf-8') if isinstance(t['result'], basestring) else str(t['result'])
-                    values.append(value)
+                    value = t['result'].encode('utf-8') if isinstance(t['result'], str) else str(t['result'])
+                    value = t['result'].encode('utf-8') if isinstance(t['result'], bytes) else t['result']
+                    value = str(t['result']) if isinstance(t['result'], bool) else t['result']
+                    values.append(str(value))
                 print('\t'.join(values))
         elif self.args.output_format == 'line':
             for site in self.sites:
@@ -231,7 +233,7 @@ class Sites:
                 print(out)
 
                 for t in site['site_info']:
-                    value = t['result'].encode('idna') if isinstance(t['result'], basestring) else str(t['result'])
+                    value = t['result'].encode('idna') if isinstance(t['result'], str) else str(t['result'])
                     print('%s: %s: %s' % (
                         s['domain'], # colored(site['root_path']),
                         t['name'],
@@ -280,7 +282,7 @@ class CommandRunner:
 
         self.lock_write('sites-info started, total commands: %d' %
                         len(self.commands))
-        os.chmod(self.lock_file_path, 0600)
+        os.chmod(self.lock_file_path, 0o600)
 
         for k, command in enumerate(self.commands):
             cmd = '%s %s' % (command['command'], ' '.join(command['args']))
@@ -288,11 +290,11 @@ class CommandRunner:
                             (k + 1, len(self.commands), cmd))
 
             (out, err) = self.run_command(cmd)
-            self.commands[k]['stdout'] = out
-            self.commands[k]['stderr'] = err
+            self.commands[k]['stdout'] = out.decode('utf-8') if out else '';
+            self.commands[k]['stderr'] = err.decode('utf-8') if err else '';
             if command['out_path']:
                 with open(command['out_path'], 'w') as f:
-                    f.write(out)
+                    f.write(out.decode('utf-8'))
 
             time.sleep(self.delay)
 
@@ -319,7 +321,7 @@ class XLSTable():
         for path in paths:
             if os.path.exists(path):
                 with open(path, 'r') as f:
-                    tests_config = yaml.load(f)
+                    tests_config = yaml.load(f, Loader=yaml.FullLoader)
 
         if not tests_config:
             print("No site-info.yml found, or empty, aborting.")
@@ -375,13 +377,13 @@ class XLSTable():
                     cell.style = styles[col['valid']]
 
                 # set numeric types for some test results
-                if isinstance(col['result'], (int, long, float, complex)):
+                if isinstance(col['result'], (int, float, complex)):
                     #cell.value = str(col['result'])
                     cell.data_type = cell.TYPE_NUMERIC
                     #cell.number_format = '0.00E+00'
 
                 # set numeric types for some test results
-                elif isinstance(col['result'], basestring) and col['result'].isdigit():
+                elif isinstance(col['result'], str) and col['result'].isdigit():
                     #cell.value = float(col['result']) if '.' in col['result'] else int(col['result'])
                     cell.data_type = cell.TYPE_NUMERIC
 
@@ -451,7 +453,7 @@ class XLSTable():
                             font=Font(color='9C0006')
                         )
         }
-        for name,style in styles.iteritems():
+        for name,style in styles.items():
             book.add_named_style(style)
 
         # Sheet "drupals"

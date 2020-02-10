@@ -1,4 +1,3 @@
-from __future__ import print_function
 import argparse
 import os
 import re
@@ -9,7 +8,7 @@ from pprint import pprint
 import sh
 import time
 import json
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import yaml
 from influxdb import line_protocol
 import datetime
@@ -116,7 +115,7 @@ class SiteInfo():
         for path in paths:
             if os.path.exists(path):
                 with open(path, 'r') as f:
-                    tests_config = yaml.load(f)
+                    tests_config = yaml.load(f, Loader=yaml.FullLoader)
 
         if not tests_config:
             print("No site-info.yml found, or empty, aborting.")
@@ -164,8 +163,12 @@ class SiteInfo():
         self._results = []
 
     def run(self):
-        self.add_data('domain', os.path.basename(
-            self.root_path).decode('idna'))
+        if sys.version_info.major == 2:
+            domain = os.path.basename(self.root_path).decode('idna')
+        else:
+            domain = os.path.basename(self.root_path)
+
+        self.add_data('domain', domain)
 
         for t in self.tests:
             # some tests has not command, for viasite-projects
@@ -187,7 +190,6 @@ class SiteInfo():
         data = self.get_data()
 
     def get_output(self, data, format):
-
         if format == 'console':
             output = ''
             for t in data:
@@ -283,12 +285,15 @@ class SiteInfo():
                         test.result = True
                     else:
                         test.result = None
-                if test.type == 'integer':
+                elif test.type == 'integer':
                     test.result = int(float(test.result))
-                if test.type == 'float':
+                elif test.type == 'float':
                     test.result = float(test.result)
-                if test.type == 'time':
+                elif test.type == 'time':
                     test.result = int(float(test.result))
+                #else:
+                #    test.result = str(test.result)
+                    # pprint(test.result)
 
             col = {
                 'name': test.name,
@@ -380,7 +385,7 @@ class SiteTest():
             proc = subprocess.Popen(
                 self.command, stdout=subprocess.PIPE, shell=True)
             (out, err) = proc.communicate()
-            self.result = out.strip()
+            self.result = out.strip().decode('utf-8')
 
             # integer values
             intRegex = re.compile('^[0-9]+$')
@@ -446,14 +451,14 @@ class SiteTest():
         #	return result
 
         valid = self._check(result, rules)
-        if not valid:
-            return False
+        if valid:
+            return True
         elif isinstance(rules, dict) and 'warning' in rules:
-            not_warning = self._check(result, rules['warning'])
-            if not not_warning:
+            warning = self._check(result, rules['warning'])
+            if warning:
                 return 'Warn'
 
-        return True
+        return False
 
     def valid_str(self):
         return {
@@ -470,18 +475,21 @@ class SiteTest():
     """
 
     def _check(self, result, rules):
+
         if isinstance(rules, dict):
-            if isinstance(result, basestring) and result.isdigit():
+            if isinstance(result, str) and result.isdigit():
                 result = float(result)
 
-            if 'max' in rules and result > rules['max']:
+            if 'max' in rules and int(result) > int(rules['max']):
                 # print('%d > %d' % (result, rules['max']))
                 return False
 
-            if 'min' in rules and result < rules['min']:
+            if 'min' in rules and int(result) < int(rules['min']):
                 return False
 
         else:
+            if self.type == 'boolean':
+                return bool(result) or int(result) == int(rules)
             return result == rules
 
         return True

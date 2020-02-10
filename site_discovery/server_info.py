@@ -53,7 +53,7 @@ class ServerInfo():
         for path in paths:
             if os.path.exists(path):
                 with open(path, 'r') as f:
-                    tests_config = yaml.load(f)
+                    tests_config = yaml.load(f, Loader=yaml.FullLoader)
 
         if not tests_config:
             print("No server-info.yml found, or empty, aborting.")
@@ -104,7 +104,7 @@ class ServerInfo():
             results.append(result)
 
             if self.output_format == 'console':
-                print '%s: %s (%s)' % (result['name'], result['result'], result['time'])
+                print('%s: %s (%s)' % (result['name'], result['result'], result['time']))
 
         info['results'] = results
         return info
@@ -151,7 +151,7 @@ class ServerInfo():
                 'fields': fields
             }]}
 
-            print line_protocol.make_lines(data)
+            print(line_protocol.make_lines(data))
 
 
 if __name__ == '__main__':
