@@ -289,7 +289,6 @@ class SiteInfo():
                     elif test.type == 'integer':
                         test.result = int(float(test.result))
                     elif test.type == 'float':
-                        pprint(test.command)
                         test.result = float(test.result)
                     elif test.type == 'time':
                         test.result = int(float(test.result))
@@ -448,7 +447,7 @@ class SiteTest():
         rules = self.validate
         result = self.result
 
-        if not self.validable() or result is None or result == '':
+        if not self.validable() or result is None:
             return None
 
         # elif rules=='result':
