@@ -1,15 +1,158 @@
-<a name=""></a>
-#  (2018-09-04)
+#  (2020-03-16)
+
+
+
+## [0.5.1](https://github.com/viasite/site-discovery/compare/0.5.0...0.5.1) (2020-03-16)
 
 
 ### Bug Fixes
 
-* server-info with empty logs caused exception ([5fc60cd](https://github.com/viasite/site-discovery/commit/5fc60cd))
+* catch exception on test result type fix ([77cdd79](https://github.com/viasite/site-discovery/commit/77cdd79))
+
+
+
+# [0.5.0](https://github.com/viasite/site-discovery/compare/0.4.0...0.5.0) (2020-02-10)
+
+
+### Bug Fixes
+
+* migrate to python 3, fix console color validator ([e64642c](https://github.com/viasite/site-discovery/commit/e64642c))
+
+
+
+# [0.4.0](https://github.com/viasite/site-discovery/compare/0.3.6...0.4.0) (2019-01-20)
+
+
+### Bug Fixes
+
+* поправлена валидация в консоли (раньше все было fail, теперь fail и warn) ([fca85db](https://github.com/viasite/site-discovery/commit/fca85db))
+
+
+### Features
+
+* type float, correct parse float as integer ([ca87bbe](https://github.com/viasite/site-discovery/commit/ca87bbe))
+
+
+
+## [0.3.6](https://github.com/viasite/site-discovery/compare/0.3.5...0.3.6) (2019-01-12)
+
+
+### Bug Fixes
+
+* correct value for tests with boolean type ([c332007](https://github.com/viasite/site-discovery/commit/c332007))
+
+
+
+## [0.3.5](https://github.com/viasite/site-discovery/compare/0.3.4...0.3.5) (2019-01-11)
+
+
+### Features
+
+* boolean fields in line format both in fields and ([37c944b](https://github.com/viasite/site-discovery/commit/37c944b))
+
+
+
+## [0.3.4](https://github.com/viasite/site-discovery/compare/0.3.3...0.3.4) (2019-01-11)
+
+
+### Bug Fixes
+
+* time in UTC for line format ([1f4fd91](https://github.com/viasite/site-discovery/commit/1f4fd91))
+
+
+
+## [0.3.2](https://github.com/viasite/site-discovery/compare/0.3.1...0.3.2) (2019-01-11)
+
+
+### Bug Fixes
+
+* time in msecs ([3d3eba6](https://github.com/viasite/site-discovery/commit/3d3eba6))
+
+
+
+## [0.3.1](https://github.com/viasite/site-discovery/compare/0.3.0...0.3.1) (2019-01-11)
+
+
+### Bug Fixes
+
+* add time to line protocol output ([0d6b0e5](https://github.com/viasite/site-discovery/commit/0d6b0e5))
+
+
+
+# [0.3.0](https://github.com/viasite/site-discovery/compare/0.2.1...0.3.0) (2019-01-11)
+
+
+### Features
+
+* result types in python and output, --log-path, --log-format, output to stdout and to log in different formats ([ef62892](https://github.com/viasite/site-discovery/commit/ef62892))
+
+
+
+## [0.2.1](https://github.com/viasite/site-discovery/compare/0.2.0...0.2.1) (2018-11-18)
+
+
+### Bug Fixes
+
+* --group don't affect when --only passed ([a66fbbc](https://github.com/viasite/site-discovery/commit/a66fbbc))
+
+
+
+# [0.2.0](https://github.com/viasite/site-discovery/compare/0.1.9...0.2.0) (2018-11-18)
+
+
+### Features
+
+* **site-info:** --only argument for run several tests by name ([62adc00](https://github.com/viasite/site-discovery/commit/62adc00))
+
+
+
+## [0.1.9](https://github.com/viasite/site-discovery/compare/0.1.8...0.1.9) (2018-11-17)
+
+
+### Bug Fixes
+
+* not output tests without command ([da7d961](https://github.com/viasite/site-discovery/commit/da7d961))
+
+
+
+## [0.1.8](https://github.com/viasite/site-discovery/compare/0.1.7...0.1.8) (2018-11-17)
+
+
+### Bug Fixes
+
+* previous commit fix ([0b48991](https://github.com/viasite/site-discovery/commit/0b48991))
+
+
+
+## [0.1.7](https://github.com/viasite/site-discovery/compare/0.1.6...0.1.7) (2018-11-17)
+
+
+### Bug Fixes
+
+* tests without command support ([ae5d049](https://github.com/viasite/site-discovery/commit/ae5d049))
+
+
+
+## [0.1.6](https://github.com/viasite/site-discovery/compare/0.1.5...0.1.6) (2018-09-06)
+
+
+### Bug Fixes
+
+* was TypeError when validate is int ([c5a9b4e](https://github.com/viasite/site-discovery/commit/c5a9b4e))
+
+
+
+## [0.1.4](https://github.com/viasite/site-discovery/compare/0.1.3...0.1.4) (2018-09-04)
+
+
+### Bug Fixes
+
 * **site-info:** output integers as int, not string ([59205e3](https://github.com/viasite/site-discovery/commit/59205e3))
+* init.sh fix ([05fa38f](https://github.com/viasite/site-discovery/commit/05fa38f))
+* server-info with empty logs caused exception ([5fc60cd](https://github.com/viasite/site-discovery/commit/5fc60cd))
 
 
 
-<a name="0.1.2"></a>
 ## [0.1.2](https://github.com/viasite/site-discovery/compare/0.1.1...0.1.2) (2018-04-17)
 
 
@@ -19,7 +162,6 @@
 
 
 
-<a name="0.1.1"></a>
 ## [0.1.1](https://github.com/viasite/site-discovery/compare/0.1.0...0.1.1) (2018-04-17)
 
 
@@ -29,7 +171,6 @@
 
 
 
-<a name="0.1.0"></a>
 # [0.1.0](https://github.com/viasite/site-discovery/compare/0.0.9...0.1.0) (2018-04-17)
 
 
@@ -40,12 +181,10 @@
 
 
 
-<a name="0.0.9"></a>
 ## [0.0.9](https://github.com/viasite/site-discovery/compare/0.0.8...0.0.9) (2018-03-07)
 
 
 
-<a name="0.0.8"></a>
 ## [0.0.8](https://github.com/viasite/site-discovery/compare/0.0.7...0.0.8) (2018-02-22)
 
 
@@ -56,12 +195,10 @@
 
 
 
-<a name="0.0.7"></a>
 ## [0.0.7](https://github.com/viasite/site-discovery/compare/0.0.6...0.0.7) (2018-01-11)
 
 
 
-<a name="0.0.6"></a>
 ## [0.0.6](https://github.com/viasite/site-discovery/compare/0.0.5...0.0.6) (2018-01-11)
 
 
@@ -71,12 +208,10 @@
 
 
 
-<a name="0.0.5"></a>
 ## [0.0.5](https://github.com/viasite/site-discovery/compare/0.0.4...0.0.5) (2017-11-27)
 
 
 
-<a name="0.0.4"></a>
 ## [0.0.4](https://github.com/viasite/site-discovery/compare/0.0.3...0.0.4) (2017-11-27)
 
 
@@ -86,7 +221,6 @@
 
 
 
-<a name="0.0.3"></a>
 ## [0.0.3](https://github.com/viasite/site-discovery/compare/0.0.2...0.0.3) (2017-11-27)
 
 
@@ -96,12 +230,10 @@
 
 
 
-<a name="0.0.2"></a>
 ## [0.0.2](https://github.com/viasite/site-discovery/compare/0.0.1...0.0.2) (2017-11-26)
 
 
 
-<a name="0.0.1"></a>
 ## [0.0.1](https://github.com/viasite/site-discovery/compare/7094f0a...0.0.1) (2017-11-26)
 
 

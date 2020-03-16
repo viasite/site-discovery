@@ -448,7 +448,7 @@ class SiteTest():
         rules = self.validate
         result = self.result
 
-        if not self.validable() or result is None:
+        if not self.validable() or result is None or result == '':
             return None
 
         # elif rules=='result':
