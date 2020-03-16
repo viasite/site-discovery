@@ -275,25 +275,29 @@ class SiteInfo():
                 test.type = 'integer'
 
             # types fix
-            if test.result == '':
-                test.result = None;
-            else:
-                if test.type == 'boolean':
-                    if test.result == '0':
-                        test.result = False
-                    elif test.result == '1':
-                        test.result = True
-                    else:
-                        test.result = None
-                elif test.type == 'integer':
-                    test.result = int(float(test.result))
-                elif test.type == 'float':
-                    test.result = float(test.result)
-                elif test.type == 'time':
-                    test.result = int(float(test.result))
-                #else:
-                #    test.result = str(test.result)
-                    # pprint(test.result)
+            try:
+                if test.result == '':
+                    test.result = None
+                else:
+                    if test.type == 'boolean':
+                        if test.result == '0':
+                            test.result = False
+                        elif test.result == '1':
+                            test.result = True
+                        else:
+                            test.result = None
+                    elif test.type == 'integer':
+                        test.result = int(float(test.result))
+                    elif test.type == 'float':
+                        pprint(test.command)
+                        test.result = float(test.result)
+                    elif test.type == 'time':
+                        test.result = int(float(test.result))
+                    #else:
+                    #    test.result = str(test.result)
+                        # pprint(test.result)
+            except:
+                test.result = None
 
             col = {
                 'name': test.name,
