@@ -140,7 +140,8 @@ class SiteInfo():
         # filter by only
         if len(only) > 0:
             for t in tests_config['tests']:
-                if 'name' in t and t['name'] in only:
+                groups_intersect = [val for val in t['groups'] if val in only]
+                if 'name' in t and t['name'] in only or len(groups_intersect) > 0:
                     filtered.append(t)
             return filtered
 
